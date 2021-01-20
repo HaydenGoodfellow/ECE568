@@ -1,0 +1,8 @@
+Lab_1/sploits/*
+!Lab_1/sploits/*.c
+!Lab_1/sploits/Makefile
+!Lab_1/sploits/*.h
+Lab_1/target/*
+!Lab_1/target/*.c
+!Lab_1/target/Makefile
+!Lab_1/target/*.h

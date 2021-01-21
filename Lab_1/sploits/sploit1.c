@@ -15,7 +15,6 @@ main(int argc, char* argv[])
         // Store important addresses gotten from GDB
         int ripAddr = 0x2021fe88;
         int bufAddrStart = 0x2021fe10;
-        int bufAddrEnd = bufAddrStart + 96;
         int overflowSize = ripAddr - bufAddrStart + 5;
         
         // Set up arg list for execve call

@@ -1,5 +1,5 @@
 #Hayden Goodfellow, 1004068386, Hayden.Goodfellow@mail.utoronto.ca
-#Joe Mama
+#Joseph Sawaya, 1004760537, joseph.sawaya@mail.utoronto.ca
 
 Target 1: This target was vulnerable to a simple buffer overflow attack. To 
 accomplish this I used GDB to find the return address and the buffer start 
@@ -7,3 +7,31 @@ address. I then allocated the arg for the target to be the difference of those
 addresses (+ 5B for padding). Then I filled it with the buffer address and 
 inserted the shell code at that address at the start of the buffer.
 
+Target 2: Similar to target 1 but not quite. Used GDB to find return address and
+buffer start address. Filled attack string with buffer start address then added 
+shellcode at the start. This target stopped copying due to a limit on the number
+of iterations the for loop could complete, so I had to overwrite the i & len 
+variables on the stack, to extend the length of the for loop. When overwriting i
+ I made it so that i is set to the value that would start copying len from the 
+attack_string. For copying len I had to insert null chars in the attack string 
+so I made use of the environment variables after that.
+
+Target 4: This target was very similar to target 2. In this case len appears 
+before i on the stack. The code here is different because the byte we are 
+copying from the attack string does not depend on the value of i but it depends 
+on how many iterations have happened before. Here I just copied a value to len
+such that the number of iterations would reach the necessary amount to overwrite
+the return address, I did not modify i: in the attack string I made it such that
+i would act normally as if our code wasn't running.
+
+Target 6: This target involves a double-free vulnerability. When copying the 
+attack string the first time we can correctly place certain values such that
+there will be a fake tag when we free q the second time. The fake tag will have
+the right pointer point to where the return address is stored such that the 
+tfree code will think that the return address is the left pointer of that tag. 
+It will then have the left pointer point to beginning of our shellcode. It will
+then think the first 2 words of our shellcode are part of a tag. If we set 
+the bottom-most bit of the second word to one, that "tag" will signal that 
+the memory beside it is free, so in an effort to consolidate memory chunks
+the tfree code will copy the address of the left pointer to where the return
+address is located. 

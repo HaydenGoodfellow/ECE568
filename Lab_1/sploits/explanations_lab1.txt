@@ -1,0 +1,9 @@
+#Hayden Goodfellow, 1004068386, Hayden.Goodfellow@mail.utoronto.ca
+#Joe Mama
+
+Target 1: This target was vulnerable to a simple buffer overflow attack. To 
+accomplish this I used GDB to find the return address and the buffer start 
+address. I then allocated the arg for the target to be the difference of those 
+addresses (+ 5B for padding). Then I filled it with the buffer address and 
+inserted the shell code at that address at the start of the buffer.
+

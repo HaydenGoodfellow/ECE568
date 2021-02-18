@@ -50,8 +50,6 @@ int main(void)
     char *addr = "\x68\xfe\x21\x20";
     printf("strlen addr = %d", strlen(addr));
     
-//    env[0] = malloc(sizeof(char) * 256);
-//    memset(env[0], '\x00', 256);
     // Set up enviroment variable which holds our dummy addresses
     int j, addrCount;
     for (j = 0, addrCount = 0; j < 24; ++j) {

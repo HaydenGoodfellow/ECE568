@@ -164,7 +164,6 @@ class BioConnect:
 
 			# Extract the authenticatorId
 			self.authenticatorId = reply.get("uuid","")
-			# print("uuid from json:", self.authenticatorId)
 
 		except ValueError:
 			self.authenticatorId = ""
@@ -262,7 +261,6 @@ class BioConnect:
 		active_status = reply.get("status","")
 		# print("Active status:", active_status)
 		if (active_status == "active"):
-			# print("Status is active")
 			face_status = reply.get("face_status","")
 			voice_status = reply.get("voice_status","")
 			fingerprint_status = reply.get("fingerprint_status","")
@@ -285,7 +283,6 @@ class BioConnect:
 		# >>> Add code here to call
 		#     .../v2/user_verifications
 		# to push an authentication request to the mobile device
-		print("Sending stepup")
 		user_uuid = self.userId
 		global	hostname
 
@@ -475,7 +472,6 @@ if status != "active":
 # Simulate a "login" prompt
 
 for i in range(3):
-	print("Getting input")
 	username = input("login: ")
 	password = input("password: ")
 

@@ -21,7 +21,7 @@ class BioConnect:
 	bcentitykey		= ''
 	bctoken			= ''
 	userId			= ''
-	authenticatorId		= ''
+	authenticatorId	= ''
 	stepupId		= ''
 
 	# ===== login: Authenticates and obtains access credentials
@@ -84,10 +84,10 @@ class BioConnect:
 
 		headers = {
 			'Content-Type':		'application/json',
-			'accept':		'application/json',
+			'accept':			'application/json',
 			'bcaccesskey':		self.bcaccesskey,
 			'bcentitykey':		self.bcentitykey,
-			'bctoken':		self.bctoken
+			'bctoken':			self.bctoken
 		}
 
 		data = {
@@ -95,10 +95,10 @@ class BioConnect:
 			'first_name':		firstName,
 			'last_name':		lastName,
 			'short_name':		shortName,
-			'email':		email,
+			'email':			email,
 			'phoneNumber':		phoneNumber,
 			'mailingAddress':	mailingAddress,
-			'title':		title
+			'title':			title
 		}
 
 		# Send our POST request to the server
@@ -182,10 +182,10 @@ class BioConnect:
 
 		headers = {
 			'Content-Type':		'application/json',
-			'accept':		'application/json',
+			'accept':			'application/json',
 			'bcaccesskey':		self.bcaccesskey,
 			'bcentitykey':		self.bcentitykey,
-			'bctoken':		self.bctoken
+			'bctoken':			self.bctoken
 		}
 
 		# Send our GET request to the server
@@ -260,9 +260,9 @@ class BioConnect:
 		# print(reply)
 		# Extract the activation URL for this mobile phone
 		active_status = reply.get("status","")
-		print("Active status:", active_status)
+		# print("Active status:", active_status)
 		if (active_status == "active"):
-			print("Status is active")
+			# print("Status is active")
 			face_status = reply.get("face_status","")
 			voice_status = reply.get("voice_status","")
 			fingerprint_status = reply.get("fingerprint_status","")
@@ -270,9 +270,9 @@ class BioConnect:
 			
 			if (face_status == "enrolled" or voice_status == "enrolled" or \
 					fingerprint_status == "enrolled" or eye_status == "enrolled"):
-				print("The device is active")
+				# print("The device is active")
 				return(active_status)
-		print("The device is inactive")
+		# print("The device is inactive")
 		return('')
 
 
@@ -291,8 +291,6 @@ class BioConnect:
 
 		url = 'https://%s/v2/user_verifications' % hostname
 		
-		print("url = ", url)
-		
 		headers = {
 			'Content-Type':		'application/json',
 			'accept':			'application/json',
@@ -310,7 +308,29 @@ class BioConnect:
 		# Send our POST request to the server
 		result = requests.post(url, data=json.dumps(data), headers=headers)
 		
+		if result == False:
+			# Error: we did not receive an HTTP/200
+			print(headers)
+			print(result.content)
+			sys.exit("Error: unable to send stepup")
+
+		try:
+			# Parse the JSON reply
+			reply = json.loads(result.content.decode('utf-8'))
+			
+		except ValueError:
+			# This prevents random 502 errors from breaking program
+			print("Error: unexpected reply for sending stepup") 
+			return('')
+			#print(headers)
+			#print(result.content)
+			#sys.exit("Error: unexpected reply for sending stepup")
 		
+		# print(reply)
+		user_verification = reply.get("user_verification", {})
+		# print("User_ver:", user_verification)
+		self.verificationId = user_verification.get("uuid", "none")
+		# print("Ver ID:", verificationId)
 		pass
 
 	# ===== getStepupStatus: Fetches the status of the user auth request
@@ -320,8 +340,51 @@ class BioConnect:
 		# >>> Add code here to call
 		#     .../v2/user_verifications/<verificationId>
 		# to poll for the current status of the verification
+		global	hostname
 
-		return('declined')
+		url = 'https://%s/v2/user_verifications/%s' % (hostname, self.verificationId)
+
+		headers = {
+			'Content-Type':		'application/json',
+			'accept':			'application/json',
+			'bcaccesskey':		self.bcaccesskey,
+			'bcentitykey':		self.bcentitykey,
+			'bctoken':			self.bctoken
+		}
+
+		# Send our GET request to the server
+		result = requests.get(url, headers=headers)
+		
+		if result == False:
+			# Error: we did not receive an HTTP/200
+			print(headers)
+			print(result.content)
+			sys.exit("Error: unable to get stepup status")
+
+		try:
+			# Parse the JSON reply
+			reply = json.loads(result.content.decode('utf-8'))
+			
+		except ValueError:
+			# This prevents random 502 errors from breaking program
+			print("Error: unexpected reply for stepup status") 
+			return('')
+			#print(headers)
+			#print(result.content)
+			#sys.exit("Error: unexpected reply for stepup status")
+		
+		# print(reply)
+		user_verification = reply.get("user_verification", {})
+		# print("User_ver:", user_verification)
+		ver_status = user_verification.get("status", "")
+		# print("ver status:", ver_status)
+		
+		# Ensure that the verification hasn't failed
+		if (ver_status == "declined" or ver_status == "expired"):
+			print("Login failed. Verification status:", ver_status)
+			sys.exit()
+
+		return(ver_status)
 
 
 	# ===== deleteUser: Deletes the user and mobile phone entries
@@ -390,19 +453,15 @@ session = BioConnect()
 
 # Log into the cloud service and provision the mobile device
 
-print("Login")
 session.login()
-print("Create user")
 session.createUser()
-print("Create Auth")
 session.createAuthenticator()
-print("Get QR Code")
 session.getQRcode()
 
 # Loop for up to two minutes, waiting for the user to provision the device
 
 for i in range(120):
-	print("Getting auth status attempt:", i)
+	# print("Getting auth status attempt:", i)
 	status = session.getAuthenticatorStatus()
 
 	if status == "active":

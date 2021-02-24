@@ -248,18 +248,19 @@ class BioConnect:
 		try:
 			# Parse the JSON reply
 			reply = json.loads(result.content.decode('utf-8'))
-			# print(reply)
-
+			
 		except ValueError:
-			print("Error: unexpected reply for authenticator status")
+			# This prevents random 502 errors from breaking program
+			print("Error: unexpected reply for authenticator status") 
 			return('')
 			#print(headers)
 			#print(result.content)
 			#sys.exit("Error: unexpected reply for authenticator status")
-	
-		# Extract the activation URL for this mobile phone
-		active_status = reply.get("active_status","")
 		
+		# print(reply)
+		# Extract the activation URL for this mobile phone
+		active_status = reply.get("status","")
+		print("Active status:", active_status)
 		if (active_status == "active"):
 			print("Status is active")
 			face_status = reply.get("face_status","")

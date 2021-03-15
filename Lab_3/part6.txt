@@ -1,0 +1,11 @@
+In part 6 I entered this into the field to have it print all the credit card numbers: 
+name' OR 'h' = 'h
+Notice the missing closing '. This ' is provided by the query the server is already doing. Basically the server runs:
+SELECT * FROM user_data WHERE last_name = 'name' OR 'h' = 'h'
+
+This attack works since we have tricked the WHERE to be always true because 'h' = 'h' is always true 
+and that is OR'd with the original comparison of last_name = 'name'.
+
+Consequently, it will always print all of the data since the select statement is SELECT *.
+The vulnerability we exploited was the server not using a prepared statement and instead performing the query 
+directly with the user input. This vulnerability wouldn't have been an issue if they would have used a prepared statement.

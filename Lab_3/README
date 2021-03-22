@@ -20,7 +20,7 @@ http://localhost:8090/WebGoat/start.mvc?#attack/1731484628/900?input1=bruh&input
 	document.form.input2.value = "000"
 </script>
 
-The field that is exploitable is the field with the name input2, that is asking for the 3 digits of the back of the user's credit card, that doesn't validate it's input.
+The field that is exploitable is the field with the HTML name input2, which is asking for the 3 digits of the back of the user's credit card, that doesn't validate it's input.
 The injected code sets a function that runs when the user clicks on the submit button to submit their credit card info, using the onclick property of the button. 
 That function makes a post request to another url, including the credit card info in its query, getting that information from the field containing the credit card info. 
 
@@ -30,7 +30,7 @@ The source field for that image is set to make a request to the same url with di
 a request to transfer funds. The website can't tell that this is an unwanted request and the user isn't alerted that it went through.
 
 Part 4 Explanation:
-This attack is similar to the previous one, where we insert code into the message field to inject code into the website. The code contains a script and two iframes.
+This attack is similar to the previous one, where we insert code into the vulnerable message field to inject code into the website. The code contains a script and two iframes.
 The script sets the source of the second iframe, to a url that confirms the transfer, by setting the query parameter transfer to CONFIRMED. 
 The way this works is that we set the source of the first iframe to a url to request the transfer.
 Once the first iframe has finished loading then we set the source of the second iframe to a url such that it confirms the request.
@@ -38,29 +38,10 @@ When an authenticated user opens this message it will load the first iframe, sta
 Again the website can't tell that these are fake requests.
 
 Part 5 Explanation:
-The formatted attack I entered into the message field is:
-<script>
-	function read_one(){
-		console.log("Reading one");
-		var one = document.getElementById("one");
-		var inbedded_doc = one.contentWindow.document;
-		var form = inbedded_doc.getElementsByName("form")[0];
-		// console.log("Type of form object: " + typeof(form));
-		var token = form.token.value;
-		console.log("Got token: " + token);
-		add_token_to_two(token);
-	}
-	function add_token_to_two(token) {
-		console.log("Adding token to two");
-		var two = document.getElementById("two");
-		two.src = "attack?Screen=1469770765&menu=900&transfer=5000" + "&token=" + token;
-		console.log("Done adding token to two");
-	}
-</script>
-
-<iframe id="one" src="attack?Screen=1469770765&menu=900&transfer=main" onload="read_one()" width="1" height="1"></iframe>
-
-<iframe id="two" width="1" height="1"></iframe>
+Similar to the last attack, we insert the attack code into the vulnerable message field to inject code into the site. Also similar to part 4 is that this code has a script and two iframes.
+This attack works by first launching our function read_one() on loading of the first iframe. The first iframe also contains the transfer=main request so it will receive back the token.
+The read_one() function proceeds to find and extract this token that was received. Following this, it calls add_token_to_two() which creates a src field in the second iframe and adds 
+the token to it so it will complete the transfer. This is how we were able to defeat the token bypass. 
 
 Part 6 Explanation:
 In part 6 I entered this into the field to have it print all the credit card numbers: 
@@ -76,11 +57,25 @@ The vulnerability we exploited was the server not using a prepared statement and
 directly with the user input. This vulnerability wouldn't have been an issue if they would have used a prepared statement.
 
 Part 7 Explanation:
+For the first part I entered the following into the field on the page:
+101; UPDATE employee SET salary=555000 WHERE userid=101
+This simply changes the salary of user 101 to $555000. Notice this time the text inputted wasn't surrounded in '' like in part 6. Consequently, I used a semicolon which indicates the end 
+of a query/command in SQL after it searched for employee with id 101 (this could be any number as this command isn't important). Following this semicolon, I use the SQL update command to 
+change the value of the user's salary in the employee table in the database. 
+
+For the second part I entered the following into the text field:
+101; CREATE TRIGGER ece BEFORE INSERT ON employee FOR EACH ROW BEGIN UPDATE employee SET email='ece568-2020@utoronto.ca' WHERE userid = NEW.userid
+This creates a trigger inside the data base which will trigger whenever any insert is done into employee and will update their email field to the ece568-.... email. 
+
+The vulnerability exploited in both parts is, once again, the server not using a prepared statement which meant the database saw the ; 
+and continued reading on and executed the second command.
 
 Part 8 Explanation:
-101 AND ((SELECT pin FROM credit where cc_number=1234123412341234) < 4000)
-101 AND ((SELECT pin FROM credit where cc_number=1234123412341234) < 4500)
-101 AND ((SELECT pin FROM credit where cc_number=1234123412341234) < 4900)
-101 AND ((SELECT pin FROM credit where cc_number=1234123412341234) < 4870)
-101 AND ((SELECT pin FROM credit where cc_number=1234123412341234) < 4863)
+For this one I used variations oof this command:
+101 AND ((SELECT pin FROM credit where cc_number=1234123412341234) < 5000)
+I started with 5000 and saw that it worked. I knew it worked as it printed out "account number is valid".  This implies that the pin must be less than 5000 as there is an AND clause in the statement 
+connecting the 101 and the subquery. Following this, I basically did a binary search where I entered 2500 in the subquery (instead of 5000) saw it failed (it output account number is invalid) and then tried 3750.
+Eventually, by using this method I was able to pinpoint the pin to be exactly 4862. I know this because it returned valid for 4863 (implying pin is less than 4863) but invalid for 4862 (implying pin is not less than 4862).
+To confirm this, I entered the command below and saw it returned valid (of course the exercise also confirmed it was correct, but this is what I would do if the exercise didn't confirm).
 101 AND ((SELECT pin FROM credit where cc_number=1234123412341234) = 4862)
+The vulnerability once again is that the server sends the input to the databasse without using a prepared statement (so the database has no way of knowing this is user input and not the server).

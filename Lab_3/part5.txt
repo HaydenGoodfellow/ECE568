@@ -4,7 +4,6 @@
 		var one = document.getElementById("one");
 		var inbedded_doc = one.contentWindow.document;
 		var form = inbedded_doc.getElementsByName("form")[0];
-		// console.log("Type of form object: " + typeof(form));
 		var token = form.token.value;
 		console.log("Got token: " + token);
 		add_token_to_two(token);

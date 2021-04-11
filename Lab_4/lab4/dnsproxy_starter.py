@@ -19,16 +19,13 @@ dns_port = args.dns_port
 SPOOF = args.spoof_response
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-print("socket created")
 s.bind(('', port))
-print("socket bound")
 dig_port = 0
 while True:
 	data = s.recvfrom(1024)
 	if not data:
 		break
 	if data[1][1] == dns_port:
-		print(data)
 		dns_resp = DNS(data[0])
 		if SPOOF:
 			if dns_resp[DNS].qd[DNSQR].qname == 'example.com.':

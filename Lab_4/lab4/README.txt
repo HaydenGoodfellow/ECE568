@@ -16,3 +16,6 @@ Part 3 Explanation:
 For this part I had to alter the contents of the DNS packet. I would check if the spoof flag was true, and if the proxy server receives a reply for the domain example.com
 it would use scapy to alter the contents of the DNS packet, by changing the ip in the answer section of the packet and the nameserver names in the nameserver section of the
 DNS packet, then send the reply back to the dig process.  
+
+Part 4 Explanation:
+In this part we poison the DNS cache in a few steps. Firstly, we generate a number of fake DNS responses with different transaction IDs which contain our attack server information. Then we have it do a legitimate DNS request on a random subdomain of example.com e.g. jkdasjs2.example.com. Following this, we flood the BIND server with our fake responses and hope one of them matches. After a number of attempts one of them should match and then it is done.

